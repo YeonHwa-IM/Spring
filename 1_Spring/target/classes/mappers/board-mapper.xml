@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.9//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="boardMapper">
+<!-- 1. 처음 있는거 지우고 namespase 적어주기  -->
+	<select id="getListCount" resultType="_int"> <!-- 마이바티스 컨피그로가서 등록 그후에 컨트롤러로 이동 -->
+		select count(*)
+		from board
+		where b_status='Y'
+	</select>
+	
+	<select id="selectList" resultMap="boardResultSet">
+		select *
+		from board
+		where b_status ='Y'
+		order by bid desc
+	</select>
+	
+	<resultMap type="Board" id="boardResultSet"> <!--다시 컨트롤러로  -->
+		<id property="bId" column="BID"/>
+		<result property="bTitle" column="BTITLE"/>
+		<result property="bWriter" column="BWRITER"/>
+		<result property="bContent" column="BCONTENT"/>
+		<result property="originalFileName" column="ORIGINAL_FILENAME"/>
+		<result property="renameFileName" column="RENAME_FILENAME"/>
+		<result property="bCount" column="BCOUNT"/>
+		<result property="bCreateDate" column="B_CREATE_DATE"/>
+		<result property="bModifyDate" column="B_MODIFY_DATE"/>
+		<result property="bStatus" column="B_STATUS"/>
+	</resultMap>
+	
+	<insert id="insertBoard">
+		insert into board
+		values(seq_bid.nextval, #{bTitle}, #{bWriter}, #{bContent}, #{originalFileName},
+				#{renameFileName}, DEFAULT, SYSDATE, SYSDATE, DEFAULT)
+	</insert>
+	
+	<!-- 보드 상세정보 가져온다. -->
+	<select id="selectBoard" resultMap="boardResultSet">
+		select *
+		from board
+		where bid =#{bId} and b_status = 'Y'
+	</select>
+
+	<update id="updateCount">
+		update board
+		set bcount = bcount +1
+		where bid=#{bId}
+	</update>
+	
+	<update id="updateBoard">
+		update board
+		set btitle = #{bTitle}, bcontent = #{bContent}, original_FileName = #{originalFileName},
+		rename_FileName = #{renameFileName}, B_modify_date = SYSDATE
+		where bId =#{bId}
+	</update>
+	<!-- 보드삭제 -->
+	<update id="deleteBoard">
+		update board
+		set b_status = 'N'
+		where bId=#{bId}
+	</update>
+	
+	<!-- 리플 상제정보 가져온다. -->
+	<select id="selectAllReply" resultMap="replyResultSet">
+		select *
+		from board
+		where bid =#{bId} and b_status = 'Y'
+	</select>
+	
+	<select id="replyListBoard" resultMap="replyResultSet">
+		select *
+		from reply
+		where ref_bid = #{bId} and r_status='Y'
+		order by rid desc
+	</select>
+	
+	<resultMap type="Reply" id="replyResultSet">
+		<id property="rId" column="RID"/>
+		<result property="rContent" column="RCONTENT"/>
+		<result property="refBid" column="REF_BID"/>
+		<result property="rWriter" column="RWRITER"/>
+		<result property="rCreateDate" column="R_CREATE_DATE"/>
+		<result property="rModifyDate" column="R_MODIFY_DATE"/>
+		<result property="rStatus" column="R_STATUS"/>
+	</resultMap>
+	
+	<insert id="insertReply">
+		insert into reply
+		values(seq_rid.nextval, #{rContent}, #{refBid}, #{rWriter}, sysdate, sysdate, default)
+	</insert>
+	
+	<select id="selectTopList" resultMap="boardResultSet">
+	<![CDATA[
+		select *
+			from(select *
+				from board
+				where b_status ='Y'
+				order by bcount desc)
+			where rownum <= 5 
+	]]> <!--부등호를 태그로 인지하고 있기때문에 CDATA로 감싸줘야함 -->
+	</select>
+</mapper>

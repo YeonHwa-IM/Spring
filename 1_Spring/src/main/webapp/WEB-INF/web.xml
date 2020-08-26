@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<!-- ******************************************************************* -->
+<!-- 	여기는 웹프로젝트의 배치 기술서(deploy descriptor) -->
+<!-- 	스프링 프로젝트가 실행되면 가장 먼저 web.xml을 읽어들이게 되고 위에서부터 차례로 태그를  -->
+<!-- 	해석하기 시작한다. -->
+<!-- ******************************************************************* -->
+
+   <!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+   <!-- DataSource, MyBatis 설정 xml 경로 ?? 이건 잘 모르겠다..-->
+   <context-param>
+      <param-name>contextConfigLocation</param-name>
+      <!-- 스프링의 환경설정 파일인 root-context.xml을 가장먼저 참조한다. -->
+<!-- <param-value>/WEB-INF/spring/root-context.xml</param-value> -->
+      <!-- 처음시작할때 암호화 시큐리티도 같이 읽으라고 추가해줌 -->
+      <param-value>
+         classPath:root-context.xml
+         /WEB-INF/spring/spring-security.xml
+      </param-value>
+   </context-param>
+   
+   <!-- Creates the Spring Container shared by all Servlets and Filters -->
+   <!-- 리스너  -->
+   <listener>
+      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+   </listener>
+
+   <!-- Processes application requests -->
+   <servlet>
+      <servlet-name>appServlet</servlet-name>
+      <!--스프링에 내장된 서블릿 클래스  -->
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <!-- /WEB-INF/spring/appServlet/servlet-context.xml을 참조 -->
+         <!-- xml 파일 안에 정의된 객체들을 로딩한다.  -->
+         <param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+      </init-param>
+      <!-- 가장 첫번째 우선순위를 뜻한다. -->
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+      
+    <!-- 서블릿 맵핑 설정 -->
+   <servlet-mapping>
+      <servlet-name>appServlet</servlet-name>
+<!--       <url-pattern>/</url-pattern> -->
+      <!-- DispatcherServlet이 모든 요청을 가로챌 수 있도록 등록 -->
+      <!-- 특정 url로 변경하여 사용가능 ex)*.do -->
+      <url-pattern>*.do</url-pattern>
+   </servlet-mapping>
+
+   <!-- 회원 관련 -->
+   <servlet>
+      <servlet-name>memberServlet</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>/WEB-INF/spring/appServlet/member-context.xml</param-value>
+      </init-param>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>memberServlet</servlet-name>
+      <url-pattern>*.me</url-pattern>
+   </servlet-mapping>
+   
+   <!-- 게시판 관련 --><!-- +AOP관련 추가해줌  -->
+   <servlet><!-- 2. 메뉴바에서 넘어왔음.*.bo 등록 -->
+      <servlet-name>boardServlet</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>
+            /WEB-INF/spring/appServlet/board-context.xml
+            /WEB-INF/spring/appServlet/aspect-context.xml
+         </param-value>
+      </init-param>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>boardServlet</servlet-name>
+      <url-pattern>*.bo</url-pattern>
+   </servlet-mapping>
+   
+   <!-- 한글깨짐 방지 인코딩 -->
+   <filter>
+      <filter-name>encodingFilter</filter-name>
+      <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+      <init-param>
+         <param-name>encoding</param-name>
+         <param-value>UTF-8</param-value>
+      </init-param>
+   </filter>
+   <filter-mapping>
+      <filter-name>encodingFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+   </filter-mapping>
+   
+   <!-- 공용 에러페이지 등록하기 -->
+   <error-page>
+      <exception-type>java.lang.Exception</exception-type>
+      <location>/WEB-INF/views/common/errorPage.jsp</location>
+   </error-page>
+
+
+</web-app>

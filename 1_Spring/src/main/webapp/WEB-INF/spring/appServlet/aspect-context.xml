@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+<!-- 	빈등록 -->
+<!-- 	<bean id="loggerAspect" class="com.kh.spring.common.aop.LoggerAspect1" /> -->
+	
+<!-- 	선언적 AOP(시작) -->
+<!-- 	<aop:config> -->
+<!-- 		<aop:aspect id="loggerAspect" ref="loggerAspect"> -->
+<!-- 			<aop:pointcut expression="execution(* com.kh.spring.board..*(..))" id="pcForAll"/> -->
+<!-- 			(* )는 반환값을 모르니 *로 적어줌  ..이 메소드 모두 포함하고 있다는 뜻 -->
+<!-- 			<aop:before method="loggerAdvice" pointcut-ref="pcForAll"/> -->
+<!-- 			<aop:around method="loggerAdvice" pointcut-ref="pcForAll"/> -->
+<!-- 		</aop:aspect> -->
+<!-- 	</aop:config> -->
+<!-- 	선언적 AOP(끝) -->
+	
+		<!-- 프로그래밍적 AOP (시작) -->
+		<aop:aspectj-autoproxy />
+		<!-- 프로그래밍적 AOP (끝) -->
+
+</beans>
